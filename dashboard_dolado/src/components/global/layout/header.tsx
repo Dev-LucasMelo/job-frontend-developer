@@ -1,9 +1,13 @@
+import Navbar from "@/components/global/layout/navbar";
+
+
+
 const Header = () => {
     return (
-        <header className="h-25 w-full flex flex-col border-2 justify-around">
+        <header className="h-25 w-full flex flex-col justify-around">
             <p className="font-bold w-full" >@Dolado</p>
 
-            <p className="w-full" >[component menu] </p>
+            <Navbar />
         </header>
     );
 }
