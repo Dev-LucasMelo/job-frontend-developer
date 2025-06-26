@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import '../assets/css/global/index.css'
+import Footer from "@/components/global/layout/footer";
+import Header from "@/components/global/layout/header";
 
 export const metadata: Metadata = {
   title: "Dolado",
@@ -12,8 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br">
-      <body>
+      <body className="px-7 py-4 flex flex-col min-h-screen">
+        <Header />
         {children}
+        <Footer />
       </body>
     </html>
   );
