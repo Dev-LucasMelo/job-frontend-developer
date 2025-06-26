@@ -5,12 +5,26 @@ import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-
 import Card from "@/components/home/card";
+import HomeService from "@/services/Home";
+import { useState, useEffect } from "react";
+import { CardProps } from "@/types/home/cardType";
 
 const Carrousel = () => {
+    const [slides, setSlides] = useState<CardProps[]>([])
 
-    const slides = ["1", "2", "3", "4", "5", "6"];
+    useEffect(() => {
+
+        async function obterDados() {
+            const Service = new HomeService()
+            await Service.ObterNotificiasCarousel().then((response) => {
+                setSlides(response)
+            })
+        }
+
+        obterDados()
+    }, [])
+
 
     return (
         <div className="w-full mx-auto mt-6">
@@ -34,9 +48,10 @@ const Carrousel = () => {
             >
 
                 {slides.map((slide) => (
-                    <SwiperSlide key={slide}>
+                    <SwiperSlide key={slide.id}>
                         <Card
-                            content={slide}
+                            content={slide.content}
+                            image={slide.image}
                         />
                     </SwiperSlide>
                 ))}
