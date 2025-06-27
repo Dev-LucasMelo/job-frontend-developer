@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import '../assets/css/global/index.css'
 import Footer from "@/components/global/layout/footer";
 import Header from "@/components/global/layout/header";
+import { ReduxProvider } from '@/store/reduxProvider';
 
 export const metadata: Metadata = {
   title: "Dolado",
@@ -17,7 +18,9 @@ export default function RootLayout({
     <html lang="pt-br">
       <body className="px-7 py-4 flex flex-col min-h-screen">
         <Header />
-        {children}
+        <ReduxProvider>
+          {children}
+        </ReduxProvider>
         <Footer />
       </body>
     </html>

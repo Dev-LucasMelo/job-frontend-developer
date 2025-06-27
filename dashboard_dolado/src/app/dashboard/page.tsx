@@ -1,7 +1,11 @@
+
+import Debug from "@/components/debug/debugComponent";
+
 export default function dashboardPage() {
+
   return (
     <div>
-      <h1>Lista de Produtos</h1>
+      <Debug />
     </div>
   );
 }

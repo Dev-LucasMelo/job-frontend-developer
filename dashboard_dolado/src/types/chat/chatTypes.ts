@@ -7,3 +7,9 @@ export type MessageProps = {
     options?: string[]
     setMensagem?: React.Dispatch<React.SetStateAction<string>>;
 };
+
+//redux 
+
+export interface Ichatbot {
+    messages: MessageProps[]
+}
