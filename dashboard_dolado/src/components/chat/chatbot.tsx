@@ -7,11 +7,13 @@ import Message from "@/components/chat/message"
 import Image from "next/image";
 
 import sendIcon from "@/assets/images/chat/send.png"
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import chatBotService from "@/services/chat";
-import { useAppSelector } from '@/store/hooks';
 
 const Chatbot = () => {
+    const historicoConversa = useAppSelector((state) => state.chatbot.messages)
+    const aguardandoResposta = useAppSelector((state) => state.chatbot.aguardandoResposta)
+
     const [isOpen, setIsOpen] = useState(true)
     const [mensagem, setMensagem] = useState("")
 
@@ -30,8 +32,6 @@ const Chatbot = () => {
             enviarMensagem();
         }
     };
-
-    const historicoConversa = useAppSelector((state) => state.chatbot.messages)
 
     return (
         <>
@@ -57,9 +57,11 @@ const Chatbot = () => {
                                 content={msg.content}
                                 autor={msg.autor}
                                 options={msg.options}
+                                status={msg.status}
                             />
                         ))}
 
+                        {/* component de loading */}
                     </div>
 
                     <div className="p-2 border-t flex items-center">
@@ -68,15 +70,21 @@ const Chatbot = () => {
                             value={mensagem}
                             onKeyDown={enviarMensagemTeclado}
                             placeholder="Digite sua mensagem..."
-                            className="flex-1 px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="flex-1 px-3 py-2 border rounded-md text-sm 
+                                       focus:outline-none focus:ring-2 focus:ring-blue-400 
+                                       disabled:placeholder:text-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
                             onInput={(e: React.ChangeEvent<HTMLInputElement>) => setMensagem(e.target.value)}
+                            disabled={!aguardandoResposta}
                         />
 
                         <button
                             onClick={() => enviarMensagem()}
                             className="border-1 border-blue-600 cursor-pointer 
-                            w-8 h-8 rounded-full flex items-center justify-center 
-                            transition duration-300 mx-1"
+                                       w-8 h-8 rounded-full flex items-center justify-center 
+                                       transition duration-300 mx-1
+                                       disabled:opacity-50 disabled:cursor-not-allowed
+                            "
+                            disabled={!aguardandoResposta}
                         >
                             <Image
                                 src={sendIcon}
