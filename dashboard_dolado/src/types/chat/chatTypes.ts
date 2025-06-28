@@ -1,3 +1,5 @@
+import { Result } from "./botTypes";
+
 // components
 export type MessageProps = {
     id: number
@@ -5,6 +7,7 @@ export type MessageProps = {
     content: string
     status: "sent" | "finished"
     options?: string[]
+    results?: Result
 };
 
 //redux

@@ -10,20 +10,12 @@ const Debug = () => {
     return (
         <>
             <h1>estado atual da aplicação</h1>
-            <br />
-            <h1>hora de fala: {aguardandoResposta ? "vez do client" : "vez do bot"}</h1>
-            <br />
-            <h1>passo atual: {passoAtual}</h1>
-            <br />
-            <h1>passos percorridos: {JSON.stringify(historicoPassos)}</h1>
-            <br />
-            <h1>mensagens:</h1>
-            <br />
+
             {mensagens.map((msg,index) =>(
-                <p key={index}>
-                    {msg.autor}
+                <p key={msg.id}>
+                    {msg.results?.message}
                     <br />
-                    {msg.status}
+                    {msg.results?.diagnosis.potential}
                 </p>
             ))}
         </>

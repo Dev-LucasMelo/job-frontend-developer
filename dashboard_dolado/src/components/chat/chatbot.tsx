@@ -58,6 +58,7 @@ const Chatbot = () => {
                                 autor={msg.autor}
                                 options={msg.options}
                                 status={msg.status}
+                                results={msg.results}
                             />
                         ))}
 

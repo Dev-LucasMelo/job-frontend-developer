@@ -16,7 +16,7 @@ const estadoInicial: Ichatbot = {
     ],
     passoAtual: "welcome",
     historicoPassos: [],
-    aguardandoResposta: true
+    aguardandoResposta: false
 }
 
 export const chatBotSlice = createSlice({

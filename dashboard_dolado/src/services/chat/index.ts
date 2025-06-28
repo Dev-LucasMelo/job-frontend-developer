@@ -1,10 +1,11 @@
 import { AppDispatch } from "@/store";
 import { addMessage, changeState, alterCurrentStep, addStep, alterStatusMessage } from "@/store/chat/chatBotSlice";
 import { botParams, Ichatbot, MessageProps } from "@/types/chat/chatTypes";
+import { instrucoes, instrucoesIndexadasType } from "@/types/chat/botTypes"
 
 export default class chatBotService {
     private dispatch: AppDispatch
-    private instrucoes: any[]
+    private instrucoes: instrucoes[]
 
     constructor(dispatch: AppDispatch) {
         this.dispatch = dispatch;
@@ -102,7 +103,7 @@ export default class chatBotService {
                 }
             },
             {
-                "message": "Roberto, conversando com você fica claro uma coisa: vocês estão numa posição PRIVILEGIADA. Têm produto consolidado, operação estruturada, marca respeitada - só falta usar isso no digital. Empresas do porte de vocês que entraram nos marketplaces cresceram 40-60% sem canibalizarizar os canais tradicionais.",
+                "message": "conversando com você fica claro uma coisa: vocês estão numa posição PRIVILEGIADA. Têm produto consolidado, operação estruturada, marca respeitada - só falta usar isso no digital. Empresas do porte de vocês que entraram nos marketplaces cresceram 40-60% sem canibalizarizar os canais tradicionais.",
                 "type": "result",
                 "diagnosis": {
                     "stage": "Gigante Adormecido Digital",
@@ -150,8 +151,7 @@ export default class chatBotService {
 
         // atualizar estados pelo redux 
         this.dispatch(addMessage(novaMensagem))
-        this.dispatch(changeState(false))
-        this.dispatch(addStep(estadoAtual.passoAtual))
+        
         this.dispatch(alterStatusMessage({
             id: estadoAtual.messages[estadoAtual.messages.length - 1].id,
             status: "finished"
@@ -169,20 +169,174 @@ export default class chatBotService {
 
     async processarResposta(dados: botParams) {
 
-        console.log("executando processamento do bot")
+        const { passoAtual, ultimaMensagem } = dados
 
         const instrucoesIndexadas = this.instrucoes.reduce((resultado, item) => {
-            resultado[item.type] = item;
+            resultado[item.type] = item as any;
             return resultado;
-        }, {} as Record<string, typeof this.instrucoes[0]>)
+        }, {} as instrucoesIndexadasType)
 
-        // console.log(instrucoesIndexadas)
+        const { diagnosis, marketplace, products, qualification, result } = instrucoesIndexadas
 
-        console.log(dados)
+        switch (passoAtual) {
+            case "welcome":
+
+                if (ultimaMensagem.content == "Claro, vamos lá!") {
+
+                    this.dispatch(addMessage({
+                        id: Date.now(),
+                        autor: 'server',
+                        content: qualification.message,
+                        status: "sent",
+                        options: qualification.options
+                    }))
+
+                    this.dispatch(addStep("welcome"))
+                    this.dispatch(alterCurrentStep("qualification"))
+                }
+
+                break;
+            case "qualification":
+
+                if (qualification.options.includes(ultimaMensagem.content)) {
+
+                    if (qualification.followUp) {
+                        this.dispatch(addMessage({
+                            id: Date.now(),
+                            autor: 'server',
+                            content: qualification.followUp.message,
+                            status: "sent",
+                            options: qualification.followUp.options
+                        }))
+                    }
+
+                }
+
+                if (qualification.followUp.options.includes(ultimaMensagem.content)) {
+
+                    this.dispatch(addMessage({
+                        id: Date.now(),
+                        autor: 'server',
+                        content: marketplace.message,
+                        status: "sent",
+                        options: marketplace.options
+                    }))
+
+                    this.dispatch(addStep("qualification"))
+                    this.dispatch(alterCurrentStep("marketplace"))
+                }
+
+                break;
+            case "marketplace":
+
+                if (marketplace.options.includes(ultimaMensagem.content)) {
+
+                    if (marketplace.followUp) {
+                        this.dispatch(addMessage({
+                            id: Date.now(),
+                            autor: 'server',
+                            content: marketplace.followUp.message,
+                            status: "sent",
+                            options: marketplace.followUp.options
+                        }))
+                    }
+
+                }
+
+                if (marketplace.followUp.options.includes(ultimaMensagem.content)) {
+
+                    this.dispatch(addMessage({
+                        id: Date.now(),
+                        autor: 'server',
+                        content: products.message,
+                        status: "sent",
+                        options: products.options
+                    }))
+
+                    this.dispatch(addStep("marketplace"))
+                    this.dispatch(alterCurrentStep("products"))
+                }
+
+                break;
+            case "products":
+
+                if (products.options.includes(ultimaMensagem.content)) {
+
+                    if (products.followUp) {
+                        this.dispatch(addMessage({
+                            id: Date.now(),
+                            autor: 'server',
+                            content: products.followUp.message,
+                            status: "sent",
+                            options: products.followUp.options
+                        }))
+                    }
+
+                }
+
+                if (products.followUp.options.includes(ultimaMensagem.content)) {
+
+                    this.dispatch(addMessage({
+                        id: Date.now(),
+                        autor: 'server',
+                        content: diagnosis.message,
+                        status: "sent",
+                        options: diagnosis.options
+                    }))
+
+                    this.dispatch(addStep("products"))
+                    this.dispatch(alterCurrentStep("diagnosis"))
+                }
+
+                break;
+            case "diagnosis":
+
+                if (diagnosis.options.includes(ultimaMensagem.content)) {
+
+                    if (diagnosis.followUp) {
+                        this.dispatch(addMessage({
+                            id: Date.now(),
+                            autor: 'server',
+                            content: diagnosis.followUp.message,
+                            status: "sent",
+                            options: diagnosis.followUp.options
+                        }))
+                    }
+
+                }
+
+                if (diagnosis.followUp.options.includes(ultimaMensagem.content)) {
+
+                    if (result) {
+
+                        this.dispatch(addMessage({
+                            id: Date.now(),
+                            autor: 'server',
+                            content: result.message,
+                            status: "sent",
+                            results: result
+                        }))
+                    }
+
+                    this.dispatch(addStep("diagnosis"))
+                    this.dispatch(alterCurrentStep("result"))
+                }
+
+                break;
+            case "result":
+   
+                if(result.nextSteps.options.includes(ultimaMensagem.content)) {
+                    this.dispatch(changeState(true))
+                }
 
 
+                break;
+        }
 
-        // this.dispatch(changeState(true))
+        this.dispatch(alterStatusMessage({
+            id: ultimaMensagem.id,
+            status: "finished"
+        }))
     }
 
 }

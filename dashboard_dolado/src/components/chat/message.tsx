@@ -4,11 +4,11 @@ import { MessageProps } from "@/types/chat/chatTypes";
 import { useRef } from "react";
 
 const Message = (props: MessageProps) => {
-    const { content, autor, options, status } = props
+    const { content, autor, options, status, results } = props
 
     const messageStyle = {
         client: "bg-blue-600 text-white w-60 mb-3 p-2 relative left-11 rounded-tl-xl rounded-tr-xl rounded-bl-xl",
-        server: "bg-gray-200 w-60 mb-3 p-2 rounded-tr-xl rounded-bl-xl rounded-br-xl"
+        server: "bg-gray-200 w-60 mb-3 p-2 rounded-tr-xl rounded-bl-xl rounded-br-xl",
     }
 
     const dispatch = useAppDispatch()
@@ -23,8 +23,64 @@ const Message = (props: MessageProps) => {
     return (
         <>
             <p className={messageStyle[autor]}>
-                {content}
+                {
+                    content
+                }
             </p>
+
+            {
+                results && (
+                    <div className={messageStyle[autor]}>
+
+                        <span className="font-bold">
+                            Diagnóstico:
+                        </span>
+                        <span> {results.diagnosis.stage}</span>
+                        <br />
+                        <br />
+                        <span className="font-bold">Potencial:</span>
+                        <br />
+                        <br />
+                        <span>{results.diagnosis.potential}</span>
+                        <br />
+                        <br />
+                        <span className="font-bold">Insights:</span>
+                        <br />
+                        <br />
+                        <span>{results.diagnosis.specificInsights}</span>
+                        <br />
+                        <br />
+                        <span className="font-bold">Recomendações:</span>
+                        <br />
+                        <br />
+                        <ul className="list-disc pl-5">
+                            {
+                                results.diagnosis.recommendations.map((recomendacao) => (
+                                    <li key={recomendacao} >{recomendacao}</li>
+                                ))
+                            }
+                        </ul>
+                    </div>
+                )
+            }
+
+            {
+                results?.nextSteps.options?.map((option, index) => (
+                    <button
+                        value={option}
+                        onClick={(e) => escolherOpcao(option)}
+                        key={index}
+                        className="
+                            text-left duration-300 border border-blue-600 mb-2 rounded-md p-1 cursor-pointer font-semibold bg-white-500 
+                            hover:text-white hover:bg-blue-600
+                            disabled:opacity-50 disabled:hover:bg-white disabled:text-black disabled:border-gray-600 disabled:cursor-not-allowed
+                        "
+                        disabled={status == "finished" ? true : false}
+                    >
+                        {option}
+                    </button>
+                ))
+            }
 
             {
                 options?.map((option, index) => (
