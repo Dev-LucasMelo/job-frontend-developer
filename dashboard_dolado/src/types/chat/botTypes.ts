@@ -60,7 +60,7 @@ export type Result = {
     nextSteps: NextSteps;
 };
 
-export type instrucoes =
+export type Instructions =
     | Welcome
     | Qualification
     | Marketplace
@@ -68,7 +68,7 @@ export type instrucoes =
     | Diagnosis
     | Result;
 
-export type instrucoesIndexadasType = {
+export type indexedInstructionsType = {
     welcome: Welcome;
     qualification: Qualification;
     marketplace: Marketplace;

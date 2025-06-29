@@ -5,7 +5,7 @@ import gestaoCompletaIcon from "@/assets/images/Home/gestao-completa.png"
 import analiseCustosIcon from "@/assets/images/Home/analise-custos.png"
 
 export default class HomeService {
-    async ObterNotificiasCarousel(): Promise<CardProps[]> {
+    async getCarouselData(): Promise<CardProps[]> {
         return [
 
             {

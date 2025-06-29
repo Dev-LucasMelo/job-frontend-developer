@@ -4,7 +4,7 @@ import { MessageProps } from "@/types/chat/chatTypes";
 import { useRef } from "react";
 
 const Message = (props: MessageProps) => {
-    const { content, autor, options, status, results } = props
+    const { content, author, options, status, results } = props
 
     const messageStyle = {
         client: "bg-blue-600 text-white w-60 mb-3 p-2 relative left-11 rounded-tl-xl rounded-tr-xl rounded-bl-xl",
@@ -13,16 +13,16 @@ const Message = (props: MessageProps) => {
 
     const dispatch = useAppDispatch()
     const service = useRef(new chatBotService(dispatch))
-    const estadoAtual = useAppSelector((state) => state.chatbot)
+    const currentState = useAppSelector((state) => state.chatbot)
 
-    async function escolherOpcao(mensagem: string) {
-        let estadoAtualizado = await service.current.enviarMensagemPorSugestao(mensagem, estadoAtual)
-        service.current.processarResposta(estadoAtualizado)
+    async function chooseOption(message: string) {
+        let updatedState = await service.current.sendMessageBySuggestion(message, currentState)
+        service.current.processResponse(updatedState)
     }
 
     return (
         <>
-            <p className={messageStyle[autor]}>
+            <p className={messageStyle[author]}>
                 {
                     content
                 }
@@ -30,7 +30,7 @@ const Message = (props: MessageProps) => {
 
             {
                 results && (
-                    <div className={messageStyle[autor]}>
+                    <div className={messageStyle[author]}>
 
                         <span className="font-bold">
                             Diagnóstico:
@@ -68,7 +68,7 @@ const Message = (props: MessageProps) => {
                 results?.nextSteps.options?.map((option, index) => (
                     <button
                         value={option}
-                        onClick={(e) => escolherOpcao(option)}
+                        onClick={(e) => chooseOption(option)}
                         key={index}
                         className="
                             text-left duration-300 border border-blue-600 mb-2 rounded-md p-1 cursor-pointer font-semibold bg-white-500 
@@ -86,7 +86,7 @@ const Message = (props: MessageProps) => {
                 options?.map((option, index) => (
                     <button
                         value={option}
-                        onClick={(e) => escolherOpcao(option)}
+                        onClick={(e) => chooseOption(option)}
                         key={index}
                         className="
                             text-left duration-300 border border-blue-600 mb-2 rounded-md p-1 cursor-pointer font-semibold bg-white-500 

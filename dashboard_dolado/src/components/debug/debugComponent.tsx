@@ -3,9 +3,9 @@
 import { useAppSelector } from '@/store/hooks';
 const Debug = () => {
     const mensagens = useAppSelector((state) => state.chatbot.messages)
-    const aguardandoResposta = useAppSelector((state) => state.chatbot.aguardandoResposta)
-    const historicoPassos = useAppSelector((state) => state.chatbot.historicoPassos)
-    const passoAtual = useAppSelector((state) => state.chatbot.passoAtual)
+    const aguardandoResposta = useAppSelector((state) => state.chatbot.waitingReply)
+    const historicoPassos = useAppSelector((state) => state.chatbot.stepHistory)
+    const passoAtual = useAppSelector((state) => state.chatbot.currentStep)
 
     return (
         <>

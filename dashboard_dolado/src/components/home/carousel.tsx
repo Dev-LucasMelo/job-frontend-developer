@@ -10,19 +10,19 @@ import HomeService from "@/services/Home";
 import { useState, useEffect } from "react";
 import { CardProps } from "@/types/home/cardType";
 
-const Carrousel = () => {
+const Carousel = () => {
     const [slides, setSlides] = useState<CardProps[]>([])
 
     useEffect(() => {
 
-        async function obterDados() {
+        async function getData() {
             const Service = new HomeService()
-            await Service.ObterNotificiasCarousel().then((response) => {
+            await Service.getCarouselData().then((response) => {
                 setSlides(response)
             })
         }
 
-        obterDados()
+        getData()
     }, [])
 
 
@@ -61,4 +61,4 @@ const Carrousel = () => {
     );
 }
 
-export default Carrousel;
+export default Carousel;

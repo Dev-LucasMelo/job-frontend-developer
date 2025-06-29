@@ -11,25 +11,25 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import chatBotService from "@/services/chat";
 
 const Chatbot = () => {
-    const historicoConversa = useAppSelector((state) => state.chatbot.messages)
-    const aguardandoResposta = useAppSelector((state) => state.chatbot.aguardandoResposta)
+    const messageHistory = useAppSelector((state) => state.chatbot.messages)
+    const waitingReply = useAppSelector((state) => state.chatbot.waitingReply)
 
     const [isOpen, setIsOpen] = useState(true)
-    const [mensagem, setMensagem] = useState("")
+    const [newMessage, setNewMessage] = useState("")
 
     const dispatch = useAppDispatch()
     const service = useRef(new chatBotService(dispatch))
 
-    function enviarMensagem() {
-        if (mensagem) {
-            service.current.enviarMensagemPorInput(mensagem)
-            setMensagem("")
+    function sendMessage() {
+        if (newMessage) {
+            service.current.sendMessageByInput(newMessage)
+            setNewMessage("")
         }
     }
 
-    const enviarMensagemTeclado = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const sendMessageByKeyboard = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            enviarMensagem();
+            sendMessage();
         }
     };
 
@@ -50,12 +50,12 @@ const Chatbot = () => {
 
                     <div className="flex-1 p-4 overflow-y-auto text-sm text-gray-700 flex flex-col">
 
-                        {historicoConversa.map((msg) => (
+                        {messageHistory.map((msg) => (
                             <Message
                                 key={msg.id}
                                 id={msg.id}
                                 content={msg.content}
-                                autor={msg.autor}
+                                author={msg.author}
                                 options={msg.options}
                                 status={msg.status}
                                 results={msg.results}
@@ -68,24 +68,24 @@ const Chatbot = () => {
                     <div className="p-2 border-t flex items-center">
                         <input
                             type="text"
-                            value={mensagem}
-                            onKeyDown={enviarMensagemTeclado}
+                            value={newMessage}
+                            onKeyDown={sendMessageByKeyboard}
                             placeholder="Digite sua mensagem..."
                             className="flex-1 px-3 py-2 border rounded-md text-sm 
                                        focus:outline-none focus:ring-2 focus:ring-blue-400 
                                        disabled:placeholder:text-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
-                            onInput={(e: React.ChangeEvent<HTMLInputElement>) => setMensagem(e.target.value)}
-                            disabled={!aguardandoResposta}
+                            onInput={(e: React.ChangeEvent<HTMLInputElement>) => setNewMessage(e.target.value)}
+                            disabled={!waitingReply}
                         />
 
                         <button
-                            onClick={() => enviarMensagem()}
+                            onClick={() => sendMessage()}
                             className="border-1 border-blue-600 cursor-pointer 
                                        w-8 h-8 rounded-full flex items-center justify-center 
                                        transition duration-300 mx-1
                                        disabled:opacity-50 disabled:cursor-not-allowed
                             "
-                            disabled={!aguardandoResposta}
+                            disabled={!waitingReply}
                         >
                             <Image
                                 src={sendIcon}

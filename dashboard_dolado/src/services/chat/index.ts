@@ -1,15 +1,15 @@
 import { AppDispatch } from "@/store";
-import { addMessage, changeState, alterCurrentStep, addStep, alterStatusMessage } from "@/store/chat/chatBotSlice";
+import { addMessage, changeState, alterCurrentStep, addStep, alterMessageStatus } from "@/store/chat/chatBotSlice";
 import { botParams, Ichatbot, MessageProps } from "@/types/chat/chatTypes";
-import { instrucoes, instrucoesIndexadasType } from "@/types/chat/botTypes"
+import { Instructions, indexedInstructionsType } from "@/types/chat/botTypes"
 
 export default class chatBotService {
     private dispatch: AppDispatch
-    private instrucoes: instrucoes[]
+    private Instructions: Instructions[]
 
     constructor(dispatch: AppDispatch) {
         this.dispatch = dispatch;
-        this.instrucoes = [
+        this.Instructions = [
             {
                 "message": "Oi! Eu sou Sofia, consultora digital da Dolado. 😊 Sei que falar sobre vendas online pode parecer complicado, mas prometo que vamos tornar isso bem simples. Em 5 minutos, vou te mostrar exatamente como sua empresa pode crescer nos marketplaces. Pode ser?",
                 "type": "welcome",
@@ -128,10 +128,10 @@ export default class chatBotService {
         ]
     }
 
-    async enviarMensagemPorInput(mensagem: string) {
+    async sendMessageByInput(mensagem: string) {
         this.dispatch(addMessage({
             id: Date.now(),
-            autor: "client",
+            author: "client",
             content: mensagem,
             status: "sent"
         }))
@@ -139,53 +139,53 @@ export default class chatBotService {
         this.dispatch(changeState(false))
     }
 
-    async enviarMensagemPorSugestao(mensagem: string, estadoAtual: Ichatbot): Promise<botParams> {
+    async sendMessageBySuggestion(message: string, currentState: Ichatbot): Promise<botParams> {
 
         // montar objeto 
-        const novaMensagem: MessageProps = {
+        const newMessage: MessageProps = {
             id: Date.now(),
-            autor: "client",
-            content: mensagem,
+            author: "client",
+            content: message,
             status: "sent"
         }
 
         // atualizar estados pelo redux 
-        this.dispatch(addMessage(novaMensagem))
-        
-        this.dispatch(alterStatusMessage({
-            id: estadoAtual.messages[estadoAtual.messages.length - 1].id,
+        this.dispatch(addMessage(newMessage))
+
+        this.dispatch(alterMessageStatus({
+            id: currentState.messages[currentState.messages.length - 1].id,
             status: "finished"
         }))
 
         // atualizar referencia atual do componente 
 
-        let dadosBot: botParams = {
-            passoAtual: estadoAtual.passoAtual,
-            ultimaMensagem: novaMensagem,
+        let botData: botParams = {
+            currentStep: currentState.currentStep,
+            lastMessage: newMessage,
         }
 
-        return dadosBot
+        return botData
     }
 
-    async processarResposta(dados: botParams) {
+    async processResponse(data: botParams) {
 
-        const { passoAtual, ultimaMensagem } = dados
+        const { currentStep, lastMessage } = data
 
-        const instrucoesIndexadas = this.instrucoes.reduce((resultado, item) => {
+        const indexedInstructions = this.Instructions.reduce((resultado, item) => {
             resultado[item.type] = item as any;
             return resultado;
-        }, {} as instrucoesIndexadasType)
+        }, {} as indexedInstructionsType)
 
-        const { diagnosis, marketplace, products, qualification, result } = instrucoesIndexadas
+        const { diagnosis, marketplace, products, qualification, result } = indexedInstructions
 
-        switch (passoAtual) {
+        switch (currentStep) {
             case "welcome":
 
-                if (ultimaMensagem.content == "Claro, vamos lá!") {
+                if (lastMessage.content == "Claro, vamos lá!") {
 
                     this.dispatch(addMessage({
                         id: Date.now(),
-                        autor: 'server',
+                        author: 'server',
                         content: qualification.message,
                         status: "sent",
                         options: qualification.options
@@ -198,12 +198,12 @@ export default class chatBotService {
                 break;
             case "qualification":
 
-                if (qualification.options.includes(ultimaMensagem.content)) {
+                if (qualification.options.includes(lastMessage.content)) {
 
                     if (qualification.followUp) {
                         this.dispatch(addMessage({
                             id: Date.now(),
-                            autor: 'server',
+                            author: 'server',
                             content: qualification.followUp.message,
                             status: "sent",
                             options: qualification.followUp.options
@@ -212,11 +212,11 @@ export default class chatBotService {
 
                 }
 
-                if (qualification.followUp.options.includes(ultimaMensagem.content)) {
+                if (qualification.followUp.options.includes(lastMessage.content)) {
 
                     this.dispatch(addMessage({
                         id: Date.now(),
-                        autor: 'server',
+                        author: 'server',
                         content: marketplace.message,
                         status: "sent",
                         options: marketplace.options
@@ -229,12 +229,12 @@ export default class chatBotService {
                 break;
             case "marketplace":
 
-                if (marketplace.options.includes(ultimaMensagem.content)) {
+                if (marketplace.options.includes(lastMessage.content)) {
 
                     if (marketplace.followUp) {
                         this.dispatch(addMessage({
                             id: Date.now(),
-                            autor: 'server',
+                            author: 'server',
                             content: marketplace.followUp.message,
                             status: "sent",
                             options: marketplace.followUp.options
@@ -243,11 +243,11 @@ export default class chatBotService {
 
                 }
 
-                if (marketplace.followUp.options.includes(ultimaMensagem.content)) {
+                if (marketplace.followUp.options.includes(lastMessage.content)) {
 
                     this.dispatch(addMessage({
                         id: Date.now(),
-                        autor: 'server',
+                        author: 'server',
                         content: products.message,
                         status: "sent",
                         options: products.options
@@ -260,12 +260,12 @@ export default class chatBotService {
                 break;
             case "products":
 
-                if (products.options.includes(ultimaMensagem.content)) {
+                if (products.options.includes(lastMessage.content)) {
 
                     if (products.followUp) {
                         this.dispatch(addMessage({
                             id: Date.now(),
-                            autor: 'server',
+                            author: 'server',
                             content: products.followUp.message,
                             status: "sent",
                             options: products.followUp.options
@@ -274,11 +274,11 @@ export default class chatBotService {
 
                 }
 
-                if (products.followUp.options.includes(ultimaMensagem.content)) {
+                if (products.followUp.options.includes(lastMessage.content)) {
 
                     this.dispatch(addMessage({
                         id: Date.now(),
-                        autor: 'server',
+                        author: 'server',
                         content: diagnosis.message,
                         status: "sent",
                         options: diagnosis.options
@@ -291,12 +291,12 @@ export default class chatBotService {
                 break;
             case "diagnosis":
 
-                if (diagnosis.options.includes(ultimaMensagem.content)) {
+                if (diagnosis.options.includes(lastMessage.content)) {
 
                     if (diagnosis.followUp) {
                         this.dispatch(addMessage({
                             id: Date.now(),
-                            autor: 'server',
+                            author: 'server',
                             content: diagnosis.followUp.message,
                             status: "sent",
                             options: diagnosis.followUp.options
@@ -305,13 +305,13 @@ export default class chatBotService {
 
                 }
 
-                if (diagnosis.followUp.options.includes(ultimaMensagem.content)) {
+                if (diagnosis.followUp.options.includes(lastMessage.content)) {
 
                     if (result) {
 
                         this.dispatch(addMessage({
                             id: Date.now(),
-                            autor: 'server',
+                            author: 'server',
                             content: result.message,
                             status: "sent",
                             results: result
@@ -324,17 +324,16 @@ export default class chatBotService {
 
                 break;
             case "result":
-   
-                if(result.nextSteps.options.includes(ultimaMensagem.content)) {
+
+                if (result.nextSteps.options.includes(lastMessage.content)) {
                     this.dispatch(changeState(true))
                 }
-
 
                 break;
         }
 
-        this.dispatch(alterStatusMessage({
-            id: ultimaMensagem.id,
+        this.dispatch(alterMessageStatus({
+            id: lastMessage.id,
             status: "finished"
         }))
     }

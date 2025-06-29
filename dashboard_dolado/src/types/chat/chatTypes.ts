@@ -3,7 +3,7 @@ import { Result } from "./botTypes";
 // components
 export type MessageProps = {
     id: number
-    autor: "client" | "server" 
+    author: "client" | "server" 
     content: string
     status: "sent" | "finished"
     options?: string[]
@@ -11,17 +11,17 @@ export type MessageProps = {
 };
 
 //redux
-export type passos = "welcome" | "qualification" | "marketplace" | "products" | "diagnosis" | "result"
+export type steps = "welcome" | "qualification" | "marketplace" | "products" | "diagnosis" | "result"
 export interface Ichatbot {
     messages: MessageProps[]
-    passoAtual: passos
-    historicoPassos: passos[]
-    aguardandoResposta: boolean
+    currentStep: steps
+    stepHistory: steps[]
+    waitingReply: boolean
 }
 
 // service
 
 export type botParams = {
-    ultimaMensagem: MessageProps
-    passoAtual: passos
+    lastMessage: MessageProps
+    currentStep: steps
 }
