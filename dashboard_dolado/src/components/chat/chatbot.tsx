@@ -14,7 +14,7 @@ const Chatbot = () => {
     const messageHistory = useAppSelector((state) => state.chatbot.messages)
     const waitingReply = useAppSelector((state) => state.chatbot.waitingReply)
 
-    const [isOpen, setIsOpen] = useState(true)
+    const [isOpen, setIsOpen] = useState(false)
     const [newMessage, setNewMessage] = useState("")
 
     const dispatch = useAppDispatch()
