@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Ichatbot, MessageProps, steps } from '@/types/chat/chatTypes';
 
-const initialState: Ichatbot = {
+export const initialState: Ichatbot = {
     messages: [
         {
             id: Date.now(),
