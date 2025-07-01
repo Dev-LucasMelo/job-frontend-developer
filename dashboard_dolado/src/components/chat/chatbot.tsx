@@ -49,8 +49,6 @@ const Chatbot = () => {
         scrollToBottom();
     }, [messageHistory]);
 
-    //max-w-sm w-full bg-white rounded-2xl shadow-xl border border-gray-200
-
     return (
         <>
             {isOpen && (
