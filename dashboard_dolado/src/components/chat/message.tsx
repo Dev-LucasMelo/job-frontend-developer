@@ -17,7 +17,11 @@ const Message = (props: MessageProps) => {
 
     async function chooseOption(message: string) {
         let updatedState = await service.current.sendMessageBySuggestion(message, currentState)
-        service.current.processResponse(updatedState)
+
+        setTimeout(() => {
+            service.current.processResponse(updatedState)
+        }, 3000);
+
     }
 
     return (

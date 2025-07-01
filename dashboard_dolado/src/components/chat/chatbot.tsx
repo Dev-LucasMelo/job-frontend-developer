@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import chatBotIcon from "@/assets/images/chat/chat.png"
 import Message from "@/components/chat/message"
@@ -9,16 +9,21 @@ import Image from "next/image";
 import sendIcon from "@/assets/images/chat/send.png"
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import chatBotService from "@/services/chat";
+import TypingIndicator from "@/components/chat/TypingIndicator";
 
 const Chatbot = () => {
     const messageHistory = useAppSelector((state) => state.chatbot.messages)
     const waitingReply = useAppSelector((state) => state.chatbot.waitingReply)
+
+    const lastMessage = messageHistory[messageHistory.length - 1]
 
     const [isOpen, setIsOpen] = useState(false)
     const [newMessage, setNewMessage] = useState("")
 
     const dispatch = useAppDispatch()
     const service = useRef(new chatBotService(dispatch))
+
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
     function sendMessage() {
         if (newMessage) {
@@ -33,10 +38,21 @@ const Chatbot = () => {
         }
     };
 
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollTo({
+            top: messagesEndRef.current.scrollHeight,
+            behavior: "smooth",
+        });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messageHistory]);
+
     return (
         <>
             {isOpen && (
-                <div className="z-50 fixed bottom-3 right-5 w-80 h-96 bg-white border rounded-xl shadow-xl flex flex-col overflow-hidden">
+                <div className="z-50 fixed bottom-3 right-5 w-80 h-100 bg-white border rounded-xl shadow-xl flex flex-col overflow-hidden">
 
                     <div className="bg-blue-600 text-white px-4 py-2 flex justify-between items-center">
                         <h2 className="font-semibold text-sm">Chatbot</h2>
@@ -48,7 +64,7 @@ const Chatbot = () => {
                         </button>
                     </div>
 
-                    <div className="flex-1 p-4 overflow-y-auto text-sm text-gray-700 flex flex-col">
+                    <div ref={messagesEndRef} className="flex-1 p-4 overflow-y-auto text-sm text-gray-700 flex flex-col">
 
                         {messageHistory.map((msg) => (
                             <Message
@@ -62,7 +78,7 @@ const Chatbot = () => {
                             />
                         ))}
 
-                        {/* component de loading */}
+                        <TypingIndicator author={lastMessage.author} />
                     </div>
 
                     <div className="p-2 border-t flex items-center">
