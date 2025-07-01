@@ -22,7 +22,7 @@ describe('Card', () => {
         expect(text.textContent).toBe(props.content)
     })
 
-    test('verifies that the classes that induce visual behavior are active', async () => {
+    it('verifies that the classes that induce visual behavior are active', async () => {
         const props = {
             image: '/teste.jpg',
             content: 'Texto visível no hover'
